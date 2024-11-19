@@ -1,0 +1,722 @@
+create database streaming_db;
+USE streaming_db;
+
+-- Tabla: Usuario
+CREATE TABLE USUARIO (
+    ID_usuario INT AUTO_INCREMENT,
+    nombre VARCHAR(50) NOT NULL,
+    numero_de_telefono VARCHAR(15) NOT NULL,
+    fecha_registro DATE,
+    tipo_de_suscripcion VARCHAR(20),
+    CONSTRAINT PK_USUARIO PRIMARY KEY (ID_usuario)
+);
+
+-- Tabla: Servicio de Streaming
+CREATE TABLE SERVICIO_DE_STREAMING (
+    ID_servicio INT AUTO_INCREMENT,
+    nombre_del_servicio VARCHAR(40) NOT NULL,
+    tipo_de_servicio VARCHAR(40) NOT NULL,
+    cantidad_de_pantallas_disponibles INT,
+    CONSTRAINT PK_SERVICIO_DE_STREAMING PRIMARY KEY (ID_servicio)
+);
+
+-- Tabla: Suscripción
+CREATE TABLE SUSCRIPCION (
+    ID_suscripcion INT AUTO_INCREMENT,
+    ID_servicio INT, -- Foreign Key que se relaciona con la tabla Servicio de Streaming
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    correo_suscripcion VARCHAR(100) NOT NULL,
+    contrasena_suscripcion VARCHAR(100) NOT NULL,
+    estado VARCHAR(20) NOT NULL,
+    CONSTRAINT PK_SUSCRIPCION PRIMARY KEY (ID_suscripcion)
+);
+
+-- Tabla: Usuario_Suscripción
+CREATE TABLE USUARIO_SUSCRIPCION (
+    ID_usuario INT,  -- Foreign Key que se relaciona con la tabla Usuario
+    ID_suscripcion INT,  -- Foreign Key que se relaciona con la tabla Suscripcion
+    CONSTRAINT PK_USUARIO_SUSCRIPCION PRIMARY KEY (ID_usuario, ID_suscripcion)  -- Primary Key compuesta
+);
+
+-- Tabla: Pantalla
+CREATE TABLE PANTALLA (
+    ID_pantalla INT AUTO_INCREMENT,
+    ID_suscripcion INT,  -- Foreign Key que se relaciona con la tabla Suscripcion
+    numero_de_pantallas INT,
+    importe_por_pantalla DECIMAL(10,2),
+    CONSTRAINT PK_PANTALLA PRIMARY KEY (ID_pantalla)
+);
+
+-- Tabla: Perfil
+CREATE TABLE PERFIL (
+    ID_perfil INT AUTO_INCREMENT,
+    ID_usuario INT,  -- Foreign Key que se relaciona con la tabla Usuario
+    ID_pantalla INT UNIQUE,  -- Foreign Key que se relaciona con la tabla Pantalla
+    nombre_del_perfil VARCHAR(30),
+    pin CHAR(4) NOT NULL, 
+    CONSTRAINT PK_PERFIL PRIMARY KEY (ID_perfil)
+);
+
+-- Tabla: Pago
+CREATE TABLE PAGO (
+    ID_pago INT AUTO_INCREMENT,
+    ID_pantalla INT,  -- Foreign Key que se relaciona con la tabla Pantalla
+    fecha_de_pago DATE NOT NULL,
+    importe DECIMAL(10,2) NOT NULL,
+    metodo_de_pago VARCHAR(30) NOT NULL,
+    CONSTRAINT PK_PAGO PRIMARY KEY (ID_pago)
+);
+
+-- Tabla: Inversión
+CREATE TABLE INVERSION (
+    ID_inversion INT AUTO_INCREMENT,
+    ID_servicio INT,  -- Foreign Key que se relaciona con la tabla Servicio de Streaming
+    importe DECIMAL(10,2) NOT NULL,
+    fecha DATE NOT NULL,
+    metodo_de_pago VARCHAR(30) NOT NULL,
+    CONSTRAINT PK_INVERSION PRIMARY KEY (ID_inversion)
+);
+
+-- foreign keys
+
+-- Reference:  FK_SUSCRIPCION_SERVICIO_DE_STREAMING (tabla: SUSCRIPCION)
+ALTER TABLE SUSCRIPCION 
+ADD CONSTRAINT FK_SUSCRIPCION_SERVICIO_DE_STREAMING 
+FOREIGN KEY (ID_servicio)
+REFERENCES SERVICIO_DE_STREAMING (ID_servicio);
+
+-- Reference:  FK_USUARIO_SUSCRIPCION  (tabla: USUARIO_SUSCRIPCION)
+ALTER TABLE USUARIO_SUSCRIPCION 
+ADD CONSTRAINT FK_USUARIO_SUSCRIPCION FOREIGN KEY (ID_suscripcion)
+REFERENCES SUSCRIPCION (ID_suscripcion);
+
+-- Reference:  FK_USUARIO_SUSCRIPCION_USUARIO (tabla: USUARIO_SUSCRIPCION)
+ALTER TABLE USUARIO_SUSCRIPCION 
+ADD CONSTRAINT FK_USUARIO_SUSCRIPCION_USUARIO FOREIGN KEY (ID_usuario)
+REFERENCES USUARIO (ID_usuario);
+
+-- Reference:  FK_PANTALLA_SUSCRIPCION  (tabla: PANTALLA)
+ALTER TABLE PANTALLA 
+ADD CONSTRAINT FK_PANTALLA_SUSCRIPCION FOREIGN KEY (ID_suscripcion)
+REFERENCES SUSCRIPCION (ID_suscripcion);
+
+-- Reference:  FK_Perfil_Usuario  (tabla: PERFIL)
+ALTER TABLE PERFIL 
+ADD CONSTRAINT FK_PERFIL_USUARIO FOREIGN KEY (ID_usuario)
+REFERENCES USUARIO (ID_usuario);
+
+-- Reference:  FK_Perfil_Pantalla (tabla: PERFIL)
+ALTER TABLE PERFIL 
+ADD CONSTRAINT FK_PERFIL_PANTALLA FOREIGN KEY (ID_pantalla)
+REFERENCES PANTALLA (ID_pantalla);
+
+-- Reference:  FK_Pago_Pantalla  (tabla: PAGO)
+ALTER TABLE PAGO 
+ADD CONSTRAINT FK_PAGO_PANTALLA FOREIGN KEY (ID_pantalla)
+REFERENCES PANTALLA (ID_pantalla);
+
+-- Reference:  FK_Inversion_Servicio  (tabla: INVERSION)
+ALTER TABLE INVERSION 
+ADD CONSTRAINT FK_INVERSION_SERVICIO FOREIGN KEY (ID_servicio)
+REFERENCES SERVICIO_DE_STREAMING (ID_servicio);
+
+INSERT INTO USUARIO (nombre, numero_de_telefono, fecha_registro, tipo_de_suscripcion)
+VALUES
+('Usuario 1', '1111111111', '2024-01-01', 'Premium'),
+('Usuario 2', '2222222222', '2024-01-02', 'Basic'),
+('Usuario 3', '3333333333', '2024-01-03', 'Standard'),
+('Usuario 4', '4444444444', '2024-01-04', 'Premium'),
+('Usuario 5', '5555555555', '2024-01-05', 'Basic'),
+('Usuario 6', '6666666666', '2024-01-06', 'Standard'),
+('Usuario 7', '7777777777', '2024-01-07', 'Premium'),
+('Usuario 8', '8888888888', '2024-01-08', 'Basic'),
+('Usuario 9', '9999999999', '2024-01-09', 'Standard'),
+('Usuario 10', '1010101010', '2024-01-10', 'Premium'),
+('Usuario 11', '1112131415', '2024-01-11', 'Basic'),
+('Usuario 12', '1213141516', '2024-01-12', 'Standard'),
+('Usuario 13', '1314151617', '2024-01-13', 'Premium'),
+('Usuario 14', '1415161718', '2024-01-14', 'Basic'),
+('Usuario 15', '1516171819', '2024-01-15', 'Standard'),
+('Usuario 16', '1617181920', '2024-01-16', 'Premium'),
+('Usuario 17', '1718192021', '2024-01-17', 'Basic'),
+('Usuario 18', '1819202122', '2024-01-18', 'Standard'),
+('Usuario 19', '1920212223', '2024-01-19', 'Premium'),
+('Usuario 20', '2021222324', '2024-01-20', 'Basic');
+
+INSERT INTO SERVICIO_DE_STREAMING (nombre_del_servicio, tipo_de_servicio, cantidad_de_pantallas_disponibles)
+VALUES
+('Netflix', 'Video', 4),
+('Disney+', 'Video', 4),
+('Spotify', 'Music', 6),
+('HBO Max', 'Video', 5),
+('Apple Music', 'Music', 4),
+('Amazon Prime', 'Video', 3),
+('YouTube Premium', 'Music', 6),
+('Hulu', 'Video', 4),
+('Tidal', 'Music', 3),
+('Paramount+', 'Video', 2),
+('Crunchyroll', 'Video', 4),
+('Peacock', 'Video', 3),
+('Deezer', 'Music', 4),
+('Shudder', 'Video', 2),
+('Pandora', 'Music', 3),
+('Google Play Music', 'Music', 6),
+('Rakuten TV', 'Video', 2),
+('Viki', 'Video', 3),
+('DAZN', 'Video', 4),
+('Qobuz', 'Music', 2);
+
+INSERT INTO SUSCRIPCION (ID_servicio, fecha_inicio, fecha_fin, correo_suscripcion, contrasena_suscripcion, estado)
+VALUES
+(1, '2024-01-01', '2024-12-31', 'user1@netflix.com', 'pass1', 'activa'),
+(2, '2024-01-05', '2024-12-31', 'user2@disney.com', 'pass2', 'activa'),
+(3, '2024-01-10', '2024-12-31', 'user3@spotify.com', 'pass3', 'inactiva'),
+(4, '2024-01-15', '2024-12-31', 'user4@hbomax.com', 'pass4', 'activa'),
+(5, '2024-01-20', '2024-12-31', 'user5@applemusic.com', 'pass5', 'activa'),
+(6, '2024-01-25', '2024-12-31', 'user6@prime.com', 'pass6', 'inactiva'),
+(7, '2024-02-01', '2024-12-31', 'user7@youtube.com', 'pass7', 'activa'),
+(8, '2024-02-05', '2024-12-31', 'user8@hulu.com', 'pass8', 'activa'),
+(9, '2024-02-10', '2024-12-31', 'user9@tidal.com', 'pass9', 'inactiva'),
+(10, '2024-02-15', '2024-12-31', 'user10@paramount.com', 'pass10', 'activa'),
+(11, '2024-02-20', '2024-12-31', 'user11@crunchyroll.com', 'pass11', 'activa'),
+(12, '2024-02-25', '2024-12-31', 'user12@peacock.com', 'pass12', 'inactiva'),
+(13, '2024-03-01', '2024-12-31', 'user13@deezer.com', 'pass13', 'activa'),
+(14, '2024-03-05', '2024-12-31', 'user14@shudder.com', 'pass14', 'activa'),
+(15, '2024-03-10', '2024-12-31', 'user15@pandora.com', 'pass15', 'activa'),
+(16, '2024-03-15', '2024-12-31', 'user16@googleplay.com', 'pass16', 'activa'),
+(17, '2024-03-20', '2024-12-31', 'user17@rakuten.com', 'pass17', 'activa'),
+(18, '2024-03-25', '2024-12-31', 'user18@viki.com', 'pass18', 'activa'),
+(19, '2024-04-01', '2024-12-31', 'user19@dazn.com', 'pass19', 'activa'),
+(20, '2024-04-05', '2024-12-31', 'user20@qobuz.com', 'pass20', 'inactiva');
+
+INSERT INTO USUARIO_SUSCRIPCION (ID_usuario, ID_suscripcion)
+VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7),
+(8, 8),
+(9, 9),
+(10, 10),
+(11, 11),
+(12, 12),
+(13, 13),
+(14, 14),
+(15, 15),
+(16, 16),
+(17, 17),
+(18, 18),
+(19, 19),
+(20, 20);
+
+INSERT INTO PANTALLA (ID_suscripcion, numero_de_pantallas, importe_por_pantalla)
+VALUES
+(1, 2, 10.00),
+(2, 3, 12.50),
+(3, 1, 7.00),
+(4, 4, 15.00),
+(5, 1, 8.00),
+(6, 2, 9.00),
+(7, 3, 10.00),
+(8, 4, 12.00),
+(9, 2, 11.00),
+(10, 3, 13.00),
+(11, 1, 9.00),
+(12, 2, 10.50),
+(13, 3, 12.30),
+(14, 4, 13.80),
+(15, 1, 7.50),
+(16, 2, 8.90),
+(17, 3, 11.50),
+(18, 4, 14.20),
+(19, 1, 9.50),
+(20, 2, 10.00);
+
+INSERT INTO PERFIL (ID_usuario, ID_pantalla, nombre_del_perfil, pin)
+VALUES
+(1, 1, 'Perfil 1', '1234'),
+(2, 2, 'Perfil 2', '5678'),
+(3, 3, 'Perfil 3', '9101'),
+(4, 4, 'Perfil 4', '1122'),
+(5, 5, 'Perfil 5', '3344'),
+(6, 6, 'Perfil 6', '5566'),
+(7, 7, 'Perfil 7', '7788'),
+(8, 8, 'Perfil 8', '9900'),
+(9, 9, 'Perfil 9', '1235'),
+(10, 10, 'Perfil 10', '6789'),
+(11, 11, 'Perfil 11', '2468'),
+(12, 12, 'Perfil 12', '1357'),
+(13, 13, 'Perfil 13', '8642'),
+(14, 14, 'Perfil 14', '9753'),
+(15, 15, 'Perfil 15', '3579'),
+(16, 16, 'Perfil 16', '4826'),
+(17, 17, 'Perfil 17', '6937'),
+(18, 18, 'Perfil 18', '8192'),
+(19, 19, 'Perfil 19', '7361'),
+(20, 20, 'Perfil 20', '4928');
+
+INSERT INTO PAGO (ID_pantalla, fecha_de_pago, importe, metodo_de_pago)
+VALUES
+(1, '2024-02-01', 20.00, 'Tarjeta de crédito'),
+(2, '2024-02-02', 30.00, 'PayPal'),
+(3, '2024-02-03', 10.00, 'Transferencia bancaria'),
+(4, '2024-02-04', 15.00, 'Tarjeta de débito'),
+(5, '2024-02-05', 12.00, 'Tarjeta de crédito'),
+(6, '2024-02-06', 18.00, 'PayPal'),
+(7, '2024-02-07', 22.00, 'Transferencia bancaria'),
+(8, '2024-02-08', 25.00, 'Tarjeta de débito'),
+(9, '2024-02-09', 28.00, 'Tarjeta de crédito'),
+(10, '2024-02-10', 30.00, 'PayPal'),
+(11, '2024-02-11', 35.00, 'Transferencia bancaria'),
+(12, '2024-02-12', 40.00, 'Tarjeta de débito'),
+(13, '2024-02-13', 45.00, 'Tarjeta de crédito'),
+(14, '2024-02-14', 50.00, 'PayPal'),
+(15, '2024-02-15', 55.00, 'Transferencia bancaria'),
+(16, '2024-02-16', 60.00, 'Tarjeta de débito'),
+(17, '2024-02-17', 65.00, 'Tarjeta de crédito'),
+(18, '2024-02-18', 70.00, 'PayPal'),
+(19, '2024-02-19', 75.00, 'Transferencia bancaria'),
+(20, '2024-02-20', 80.00, 'Tarjeta de débito');
+
+INSERT INTO INVERSION (ID_servicio, importe, fecha, metodo_de_pago)
+VALUES
+(1, 100.00, '2024-01-01', 'Tarjeta de crédito'),
+(2, 200.00, '2024-01-05', 'PayPal'),
+(3, 150.00, '2024-01-10', 'Transferencia bancaria'),
+(4, 120.00, '2024-01-15', 'Tarjeta de débito'),
+(5, 130.00, '2024-01-20', 'Tarjeta de crédito'),
+(6, 250.00, '2024-01-25', 'PayPal'),
+(7, 300.00, '2024-02-01', 'Transferencia bancaria'),
+(8, 280.00, '2024-02-05', 'Tarjeta de débito'),
+(9, 220.00, '2024-02-10', 'Tarjeta de crédito'),
+(10, 190.00, '2024-02-15', 'PayPal'),
+(11, 240.00, '2024-02-20', 'Transferencia bancaria'),
+(12, 180.00, '2024-02-25', 'Tarjeta de débito'),
+(13, 170.00, '2024-03-01', 'Tarjeta de crédito'),
+(14, 160.00, '2024-03-05', 'PayPal'),
+(15, 300.00, '2024-03-10', 'Transferencia bancaria'),
+(16, 310.00, '2024-03-15', 'Tarjeta de débito'),
+(17, 270.00, '2024-03-20', 'Tarjeta de crédito'),
+(18, 290.00, '2024-03-25', 'PayPal'),
+(19, 310.00, '2024-04-01', 'Transferencia bancaria'),
+(20, 320.00, '2024-04-05', 'Tarjeta de débito');
+
+-- Vistas
+
+-- Vista de Usuarios con sus Suscripciones Activas
+
+CREATE VIEW V_USUARIOS_SUSCRIPCIONES_ACTIVAS AS
+SELECT
+    U.ID_usuario,
+    U.nombre AS nombre_usuario,
+    U.numero_de_telefono,
+    S.ID_suscripcion,
+    S.correo_suscripcion,
+    S.fecha_inicio,
+    S.fecha_fin,
+    S.estado,
+    SS.nombre_del_servicio
+FROM
+    USUARIO U
+    INNER JOIN USUARIO_SUSCRIPCION US ON U.ID_usuario = US.ID_usuario
+    INNER JOIN SUSCRIPCION S ON US.ID_suscripcion = S.ID_suscripcion
+    INNER JOIN SERVICIO_DE_STREAMING SS ON S.ID_servicio = SS.ID_servicio
+WHERE
+    S.estado = 'activa';
+    
+-- Vista de Ingresos por Pantalla
+    
+CREATE VIEW V_INGRESOS_POR_PANTALLA AS
+SELECT
+    P.ID_pantalla,
+    S.ID_suscripcion,
+    SS.nombre_del_servicio,
+    SUM(PG.importe) AS total_ingresos
+FROM
+    PANTALLA P
+    INNER JOIN SUSCRIPCION S ON P.ID_suscripcion = S.ID_suscripcion
+    INNER JOIN SERVICIO_DE_STREAMING SS ON S.ID_servicio = SS.ID_servicio
+    INNER JOIN PAGO PG ON P.ID_pantalla = PG.ID_pantalla
+GROUP BY
+    P.ID_pantalla, S.ID_suscripcion, SS.nombre_del_servicio;
+
+-- Vista de Perfiles por Usuario
+
+CREATE VIEW V_PERFILES_POR_USUARIO AS
+SELECT
+    U.ID_usuario,
+    U.nombre AS nombre_usuario,
+    P.ID_perfil,
+    P.nombre_del_perfil,
+    P.pin,
+    PA.ID_pantalla,
+    PA.numero_de_pantallas
+FROM
+    USUARIO U
+    INNER JOIN PERFIL P ON U.ID_usuario = P.ID_usuario
+    INNER JOIN PANTALLA PA ON P.ID_pantalla = PA.ID_pantalla;
+
+-- Vista de Inversiones por Servicio de Streaming
+
+CREATE VIEW V_INVERSIONES_POR_SERVICIO AS
+SELECT
+    SS.ID_servicio,
+    SS.nombre_del_servicio,
+    SUM(I.importe) AS total_inversiones,
+    COUNT(I.ID_inversion) AS cantidad_inversiones
+FROM
+    INVERSION I
+    INNER JOIN SERVICIO_DE_STREAMING SS ON I.ID_servicio = SS.ID_servicio
+GROUP BY
+    SS.ID_servicio, SS.nombre_del_servicio;
+		
+-- Vista de Pagos Realizados por Fecha
+
+CREATE VIEW V_PAGOS_REALIZADOS AS
+SELECT
+    PG.ID_pago,
+    PG.ID_pantalla,
+    SS.nombre_del_servicio,
+    PG.fecha_de_pago,
+    PG.importe,
+    PG.metodo_de_pago
+FROM
+    PAGO PG
+    INNER JOIN PANTALLA PA ON PG.ID_pantalla = PA.ID_pantalla
+    INNER JOIN SUSCRIPCION S ON PA.ID_suscripcion = S.ID_suscripcion
+    INNER JOIN SERVICIO_DE_STREAMING SS ON S.ID_servicio = SS.ID_servicio
+ORDER BY
+    PG.fecha_de_pago DESC;
+
+-- Vista de Usuarios y Servicios Suscritos
+
+CREATE VIEW V_USUARIOS_SERVICIOS AS
+SELECT
+    U.ID_usuario,
+    U.nombre AS nombre_usuario,
+    SS.nombre_del_servicio,
+    S.fecha_inicio,
+    S.fecha_fin
+FROM
+    USUARIO U
+    INNER JOIN USUARIO_SUSCRIPCION US ON U.ID_usuario = US.ID_usuario
+    INNER JOIN SUSCRIPCION S ON US.ID_suscripcion = S.ID_suscripcion
+    INNER JOIN SERVICIO_DE_STREAMING SS ON S.ID_servicio = SS.ID_servicio;
+    
+-- Funciones 
+
+-- Función para Calcular el Total de Ingresos por Usuario
+
+DELIMITER //
+CREATE FUNCTION calcular_total_ingresos_usuario(ID_usuario INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total_ingresos DECIMAL(10,2);
+    SELECT SUM(P.importe) INTO total_ingresos
+    FROM USUARIO U
+    INNER JOIN USUARIO_SUSCRIPCION US ON U.ID_usuario = US.ID_usuario
+    INNER JOIN SUSCRIPCION S ON US.ID_suscripcion = S.ID_suscripcion
+    INNER JOIN PANTALLA PA ON S.ID_suscripcion = PA.ID_suscripcion
+    INNER JOIN PAGO P ON PA.ID_pantalla = P.ID_pantalla
+    WHERE U.ID_usuario = ID_usuario;
+    RETURN IFNULL(total_ingresos, 0);
+END //
+DELIMITER ;
+
+-- Función para Obtener el Estado de una Suscripción
+
+DELIMITER //
+CREATE FUNCTION obtener_estado_suscripcion(p_ID_suscripcion INT)
+RETURNS VARCHAR(20)
+DETERMINISTIC
+BEGIN
+    DECLARE estado_suscripcion VARCHAR(20);
+    SELECT estado INTO estado_suscripcion
+    FROM SUSCRIPCION
+    WHERE ID_suscripcion = p_ID_suscripcion; -- Usar un alias único para la variable
+    RETURN estado_suscripcion;
+END //
+DELIMITER ;
+
+-- Función para Calcular el Costo Total de una Suscripción
+
+DELIMITER //
+CREATE FUNCTION calcular_costo_total_suscripcion(ID_suscripcion INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE costo_total DECIMAL(10,2);
+    SELECT SUM(importe_por_pantalla * numero_de_pantallas) INTO costo_total
+    FROM PANTALLA
+    WHERE ID_suscripcion = ID_suscripcion;
+    RETURN IFNULL(costo_total, 0);
+END //
+DELIMITER ;
+
+-- Función para Contar el Número de Perfiles de un Usuario
+
+DELIMITER //
+CREATE FUNCTION contar_perfiles_usuario(ID_usuario INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE numero_perfiles INT;
+    SELECT COUNT(*) INTO numero_perfiles
+    FROM PERFIL
+    WHERE ID_usuario = ID_usuario;
+    RETURN numero_perfiles;
+END //
+DELIMITER ;
+
+-- Función para Calcular el Total Invertido en un Servicio de Streaming
+
+DELIMITER //
+CREATE FUNCTION calcular_total_inversion(ID_servicio INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE total_inversion DECIMAL(10,2);
+    SELECT SUM(importe) INTO total_inversion
+    FROM INVERSION
+    WHERE ID_servicio = ID_servicio;
+    RETURN IFNULL(total_inversion, 0);
+END //
+DELIMITER ;
+
+--  Función para Obtener el Nombre del Servicio de Streaming
+
+DELIMITER //
+CREATE FUNCTION obtener_nombre_servicio(p_ID_servicio INT)
+RETURNS VARCHAR(40)
+DETERMINISTIC
+BEGIN
+    DECLARE nombre_servicio VARCHAR(40);
+    SELECT nombre_del_servicio INTO nombre_servicio
+    FROM SERVICIO_DE_STREAMING
+    WHERE ID_servicio = p_ID_servicio
+    LIMIT 1; -- Limita a una fila para evitar errores
+    RETURN nombre_servicio;
+END //
+DELIMITER ;
+
+-- Stored Procedure 
+
+-- Stored Procedure para Registrar un Nuevo Usuario
+
+DELIMITER //
+CREATE PROCEDURE registrar_usuario(
+    IN p_nombre VARCHAR(50),
+    IN p_numero_de_telefono VARCHAR(15),
+    IN p_fecha_registro DATE,
+    IN p_tipo_de_suscripcion VARCHAR(20)
+)
+BEGIN
+    INSERT INTO USUARIO (nombre, numero_de_telefono, fecha_registro, tipo_de_suscripcion)
+    VALUES (p_nombre, p_numero_de_telefono, p_fecha_registro, p_tipo_de_suscripcion);
+END //
+DELIMITER ;
+
+-- Stored Procedure para Crear una Nueva Suscripción
+
+DELIMITER //
+CREATE PROCEDURE crear_suscripcion(
+    IN p_ID_usuario INT,
+    IN p_ID_servicio INT,
+    IN p_correo_suscripcion VARCHAR(100),
+    IN p_contrasena_suscripcion VARCHAR(100),
+    IN p_fecha_inicio DATE,
+    IN p_fecha_fin DATE,
+    IN p_estado VARCHAR(20)
+)
+BEGIN
+    DECLARE new_ID_suscripcion INT;
+
+    -- Insertar la nueva suscripción
+    INSERT INTO SUSCRIPCION (ID_servicio, fecha_inicio, fecha_fin, correo_suscripcion, contrasena_suscripcion, estado)
+    VALUES (p_ID_servicio, p_fecha_inicio, p_fecha_fin, p_correo_suscripcion, p_contrasena_suscripcion, p_estado);
+
+    -- Obtener el ID de la suscripción recién creada
+    SET new_ID_suscripcion = LAST_INSERT_ID();
+
+    -- Asociar la suscripción al usuario en la tabla Usuario_Suscripción
+    INSERT INTO USUARIO_SUSCRIPCION (ID_usuario, ID_suscripcion)
+    VALUES (p_ID_usuario, new_ID_suscripcion);
+END //
+DELIMITER ;
+
+-- Stored Procedure para Registrar un Pago
+
+DELIMITER //
+CREATE PROCEDURE registrar_pago(
+    IN p_ID_pantalla INT,
+    IN p_fecha_de_pago DATE,
+    IN p_importe DECIMAL(10,2),
+    IN p_metodo_de_pago VARCHAR(30)
+)
+BEGIN
+    INSERT INTO PAGO (ID_pantalla, fecha_de_pago, importe, metodo_de_pago)
+    VALUES (p_ID_pantalla, p_fecha_de_pago, p_importe, p_metodo_de_pago);
+END //
+DELIMITER ;
+
+-- Stored Procedure para Actualizar el Estado de una Suscripción
+
+DELIMITER //
+CREATE PROCEDURE actualizar_estado_suscripcion(
+    IN p_ID_suscripcion INT,
+    IN p_nuevo_estado VARCHAR(20)
+)
+BEGIN
+    UPDATE SUSCRIPCION
+    SET estado = p_nuevo_estado
+    WHERE ID_suscripcion = p_ID_suscripcion;
+END //
+DELIMITER ;
+
+-- Stored Procedure para Obtener el Resumen de Pagos de un Usuario
+
+DELIMITER //
+CREATE PROCEDURE obtener_resumen_pagos_usuario(
+    IN p_ID_usuario INT
+)
+BEGIN
+    SELECT
+        PG.metodo_de_pago,
+        SUM(PG.importe) AS total_pagado
+    FROM
+        USUARIO U
+        INNER JOIN USUARIO_SUSCRIPCION US ON U.ID_usuario = US.ID_usuario
+        INNER JOIN SUSCRIPCION S ON US.ID_suscripcion = S.ID_suscripcion
+        INNER JOIN PANTALLA PA ON S.ID_suscripcion = PA.ID_suscripcion
+        INNER JOIN PAGO PG ON PA.ID_pantalla = PG.ID_pantalla
+    WHERE
+        U.ID_usuario = p_ID_usuario
+    GROUP BY
+        PG.metodo_de_pago;
+END //
+DELIMITER ;
+
+-- Stored Procedure para Consultar las Inversiones en un Servicio de Streaming
+
+DELIMITER //
+CREATE PROCEDURE consultar_inversiones_servicio(
+    IN p_ID_servicio INT
+)
+BEGIN
+    SELECT
+        SS.nombre_del_servicio,
+        SUM(I.importe) AS total_invertido,
+        COUNT(I.ID_inversion) AS numero_de_inversiones
+    FROM
+        INVERSION I
+        INNER JOIN SERVICIO_DE_STREAMING SS ON I.ID_servicio = SS.ID_servicio
+    WHERE
+        I.ID_servicio = p_ID_servicio
+    GROUP BY
+        SS.nombre_del_servicio;
+END //
+DELIMITER ;
+
+-- Triggers
+
+-- Trigger para actualizar el estado de una suscripción al vencer
+
+DELIMITER //
+CREATE TRIGGER actualizar_estado_suscripcion
+AFTER UPDATE ON SUSCRIPCION
+FOR EACH ROW
+BEGIN
+    IF NEW.fecha_fin < CURDATE() THEN
+        UPDATE SUSCRIPCION
+        SET estado = 'inactiva'
+        WHERE ID_suscripcion = NEW.ID_suscripcion;
+    END IF;
+END //
+DELIMITER ;
+
+-- Trigger para registrar cambios en pagos
+
+CREATE TABLE AUDITORIA_PAGOS (
+    ID_auditoria INT AUTO_INCREMENT PRIMARY KEY,
+    ID_pago INT,
+    fecha_de_cambio DATETIME,
+    cambio VARCHAR(255)
+);
+
+DELIMITER //
+CREATE TRIGGER registrar_cambio_pago
+AFTER UPDATE ON PAGO
+FOR EACH ROW
+BEGIN
+    INSERT INTO AUDITORIA_PAGOS (ID_pago, fecha_de_cambio, cambio)
+    VALUES (NEW.ID_pago, NOW(), CONCAT('El importe cambió de ', OLD.importe, ' a ', NEW.importe));
+END //
+DELIMITER ;
+
+-- Trigger para prevenir usuarios duplicados
+
+DELIMITER //
+CREATE TRIGGER prevenir_usuarios_duplicados
+BEFORE INSERT ON USUARIO
+FOR EACH ROW
+BEGIN
+    DECLARE existe INT;
+    SELECT COUNT(*) INTO existe
+    FROM USUARIO
+    WHERE numero_de_telefono = NEW.numero_de_telefono;
+    
+    IF existe > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El número de teléfono ya existe.';
+    END IF;
+END //
+DELIMITER ;
+
+--  Trigger para ajustar el número de pantallas disponibles
+
+DELIMITER //
+CREATE TRIGGER ajustar_pantallas_disponibles
+AFTER INSERT ON PANTALLA
+FOR EACH ROW
+BEGIN
+    UPDATE SERVICIO_DE_STREAMING
+    SET cantidad_de_pantallas_disponibles = cantidad_de_pantallas_disponibles - NEW.numero_de_pantallas
+    WHERE ID_servicio = (SELECT ID_servicio FROM SUSCRIPCION WHERE ID_suscripcion = NEW.ID_suscripcion);
+END //
+DELIMITER ;
+
+-- Trigger para validar que el importe de una inversión no sea negativo
+
+DELIMITER //
+CREATE TRIGGER validar_importe_inversion
+BEFORE INSERT ON INVERSION
+FOR EACH ROW
+BEGIN
+    IF NEW.importe < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El importe de la inversión no puede ser negativo.';
+    END IF;
+END //
+DELIMITER ;
+
+-- Trigger para asignar automáticamente un perfil al crear una pantalla
+
+DELIMITER //
+CREATE TRIGGER crear_perfil_automatico
+AFTER INSERT ON PANTALLA
+FOR EACH ROW
+BEGIN
+    INSERT INTO PERFIL (ID_usuario, ID_pantalla, nombre_del_perfil, pin)
+    VALUES (
+        (SELECT ID_usuario FROM USUARIO_SUSCRIPCION WHERE ID_suscripcion = NEW.ID_suscripcion LIMIT 1),
+        NEW.ID_pantalla,
+        CONCAT('Perfil predeterminado para pantalla ', NEW.ID_pantalla),
+        '0000'
+    );
+END //
+DELIMITER ;
